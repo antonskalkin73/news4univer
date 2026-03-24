@@ -1,0 +1,5 @@
+{% for tag in tags %}
+<a href="{% url 'news:tag_news_list' tag.slug %}" class="badge text-bg-secondary text-decoration-none me-1">#{{ tag.name }}</a>
+{% empty %}
+<span class="text-muted">Без тегов</span>
+{% endfor %}

@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block title %}{{ news.title }}{% endblock %}
+{% block content %}
+<article>
+    <h1>{{ news.title }}</h1>
+    <div class="text-muted mb-2">Опубликовано: {{ news.published_at|date:'d.m.Y H:i' }}</div>
+    <div class="mb-3">{% include 'includes/tag_badges.html' with tags=news.tags.all %}</div>
+    <div class="mb-4">{{ news.content|safe }}</div>
+
+    <div class="d-flex gap-3 align-items-center mb-4">
+        <span>👁 Просмотры: <strong>{{ news.views_count }}</strong></span>
+        <span>👍 Лайки: <strong>{{ news.likes_count }}</strong></span>
+        <form method="post" action="{% url 'news:like_news' news.slug %}">
+            {% csrf_token %}
+            <button class="btn btn-sm btn-outline-primary" {% if liked %}disabled{% endif %}>Поставить лайк</button>
+        </form>
+    </div>
+
+    <h5>Документы</h5>
+    <ul>
+        {% for attachment in news.attachments.all %}
+            <li><a href="{{ attachment.file.url }}" download>{{ attachment.original_name }}</a> ({{ attachment.file_size }} байт)</li>
+        {% empty %}
+            <li>Документы не прикреплены.</li>
+        {% endfor %}
+    </ul>
+
+    <h5 class="mt-4">Подписка на тег</h5>
+    <form method="post" action="{% url 'subscriptions:subscribe' %}" class="row g-2">
+        {% csrf_token %}
+        <div class="col-md-5">
+            <input type="email" class="form-control" name="email" placeholder="Ваш email" required>
+        </div>
+        <div class="col-md-4">
+            <select name="tag" class="form-select" required>
+                {% for tag in news.tags.all %}
+                    <option value="{{ tag.pk }}">{{ tag.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <input type="text" name="honeypot" class="d-none" tabindex="-1" autocomplete="off">
+        <div class="col-md-3">
+            <button class="btn btn-success w-100" type="submit">Подписаться</button>
+        </div>
+    </form>
+</article>
+{% endblock %}
