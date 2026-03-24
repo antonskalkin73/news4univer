@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="alert alert-info">
+    Вы успешно отписались от тега <strong>{{ subscription.tag.name }}</strong> для email <strong>{{ subscription.email }}</strong>.
+</div>
+<a href="{% url 'news:news_list' %}" class="btn btn-primary">На главную</a>
+{% endblock %}

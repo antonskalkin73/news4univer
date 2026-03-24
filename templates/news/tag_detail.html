@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block title %}Тег {{ tag.name }}{% endblock %}
+{% block content %}
+<h1>Новости по тегу: {{ tag.name }}</h1>
+<form method="post" action="{% url 'subscriptions:subscribe' %}" class="row g-2 mb-4">
+    {% csrf_token %}
+    <div class="col-md-4"><input type="email" class="form-control" name="email" required placeholder="Email для подписки"></div>
+    <input type="hidden" name="tag" value="{{ tag.pk }}">
+    <input type="text" name="honeypot" class="d-none" tabindex="-1" autocomplete="off">
+    <div class="col-md-3"><button class="btn btn-success" type="submit">Подписаться на тег</button></div>
+</form>
+
+{% for item in page_obj %}
+<article class="card mb-3"><div class="card-body">
+    <h5><a href="{{ item.get_absolute_url }}" class="text-decoration-none">{{ item.title }}</a></h5>
+    <p>{{ item.content|striptags|truncatechars:180 }}</p>
+</div></article>
+{% empty %}<p>По этому тегу пока нет новостей.</p>{% endfor %}
+{% include 'news/pagination.html' %}
+{% endblock %}
