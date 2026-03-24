@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title %}Новости{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <h1 class="mb-3">Новости</h1>
+        <form method="get" class="row g-2 mb-4">
+            <div class="col-md-8">
+                <input type="text" name="q" value="{{ request.GET.q }}" class="form-control" placeholder="Поиск по новостям...">
+            </div>
+            <div class="col-md-4">
+                <button class="btn btn-primary w-100" type="submit">Найти</button>
+            </div>
+        </form>
+
+        {% for item in page_obj %}
+            <article class="card mb-3">
+                <div class="card-body">
+                    <h5><a href="{{ item.get_absolute_url }}" class="text-decoration-none">{{ item.title }}</a></h5>
+                    <div class="small text-muted mb-2">{{ item.published_at|date:'d.m.Y H:i' }}</div>
+                    <p>{{ item.content|striptags|truncatechars:220 }}</p>
+                    <div class="mb-2">{% include 'includes/tag_badges.html' with tags=item.tags.all %}</div>
+                    <div class="small text-muted">👁 {{ item.views_count }} · 👍 {{ item.likes_count }}</div>
+                </div>
+            </article>
+        {% empty %}
+            <p>Новости не найдены.</p>
+        {% endfor %}
+
+        {% include 'news/pagination.html' %}
+    </div>
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">Теги</div>
+            <div class="card-body">
+                {% for tag in all_tags %}
+                    <a href="{% url 'news:tag_news_list' tag.slug %}" class="badge text-bg-light border text-decoration-none mb-1">{{ tag.name }}</a>
+                {% empty %}<span class="text-muted">Тегов пока нет</span>{% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
